@@ -8,53 +8,57 @@ class ProductManager {
         this.path = 'products.txt';
     }
 
-    async addProduct(title, description, price, thumbnail, code, stock) {
+    async addProduct(product) {
         try {
             if (fs.existsSync(this.path)) {
                 let data = await fs.promises.readFile(this.path, 'utf-8');
                 const productsArray = JSON.parse(data);
                 let productId = productsArray.length;
 
-                if (!title || !description || !price || !thumbnail || !code || !stock) {
-                    return console.log("Incomplete field")
+                if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock || !product.category) {
+                    return console.log("error1")
                 } else {
                     
-                    const product = {
+                    const productData = {
                         id: productId + 1,
-                        title: title,
-                        description: description,
-                        price: price,
-                        code: code,
-                        thumbnail: thumbnail,
-                        stock: stock,
+                        title: product.title,
+                        description: product.description,
+                        price: product.price,
+                        code: product.code,
+                        thumbnail: product.thumbnail,
+                        stock: product.stock,
+                        status: true,
+                        category: product.category,
                     };
 
-                    if (productsArray.some(prod => prod.code === product.code)) {
+                    if (productsArray.some(prod => prod.code === productData.code) && productsArray.some(prod => prod.title.toLowerCase() === productData.title.toLowerCase())) {
                         return console.log({ status: 'error', message: 'the product already exists' })
                     } else {
-                        productsArray.push(product);
+                        productsArray.push(productData);
                         await fs.promises.writeFile(this.path, JSON.stringify(productsArray, null, 2));
                         return productsArray;
                     }
                 }
 
             } else {
-                if (!title || !description || !price || !thumbnail || !code || !stock) {
-                    return console.log("Incomplete field")
+                if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock || !product.category) {
+                    return console.log("error")
                 } else {
                     
-                    const product = {
+                    const productData = {
                         id: 1,
-                        title: title,
-                        description: description,
-                        price: price,
-                        code: code,
-                        thumbnail: thumbnail,
-                        stock: stock,
+                        title: product.title,
+                        description: product.description,
+                        price: product.price,
+                        code: product.code,
+                        thumbnail: product.thumbnail,
+                        stock: product.stock,
+                        status: true,
+                        category: product.category,
                     };
 
-                    await fs.promises.writeFile(this.path, JSON.stringify([product], null, 2));
-                    return product;
+                    await fs.promises.writeFile(this.path, JSON.stringify([productData], null, 2));
+                    return productData;
                 }
             }
 
@@ -98,6 +102,8 @@ class ProductManager {
             code: obj.code,
             thumbnail: obj.thumbnail,
             stock: obj.stock,
+            status: obj.status,
+            category: obj.category,
         }
         try {
             let data = await fs.promises.readFile(this.path, 'utf-8');
